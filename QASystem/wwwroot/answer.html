@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+		<title>提问</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css"/>
+		<style>
+			.header{
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+			}
+			textarea{
+				resize: none;
+				
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+		  	<div class="container">
+			    <div class="navbar-header">
+			      	<a class="navbar-brand" href="/">智游问答系统</a>
+			    </div>
+			    <div>
+			      	<ul id="menu" class="nav navbar-nav navbar-right">
+			        	<li id="dropDownMenu">
+			        	</li>
+			      	</ul>
+			    </div>
+		  	</div>
+		</nav>
+		
+		<div class="container">
+			<form>
+				<div class="form-group">
+					<label>请输入您的回答</label>
+					<textarea class="form-control" name="content"></textarea>
+				</div>
+				
+			</form>
+			<button class="btn btn-primary form-control">提交</button>
+		</div>
+		
+	</body>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.cookie.js"></script>
+	<script>
+		$.getScript("js/createList.js");
+		
+		if(!$.cookie().username){
+			alert("请先登录");
+			location.href = "/";
+		}
+		
+		//console.log("你是点击第"+$.cookie().index+"个按钮进来的");
+		
+		$("button").click(function(){
+			
+			if($("textarea").val().length<=0){
+				alert("内容不能为空");
+				return;
+			}
+			
+			//发起回答请求
+			$.post("/question/answer",$("form").serialize(),function(res){
+				if(res.err == 0){
+					alert("提交成功");
+					location.href = "/";
+				}else{
+					alert(res.status);
+				}
+			});
+			
+			
+		});
+	</script>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>上传头像</title>
+	</head>
+	<body>
+		<!--上传文件的请求必须使用post，而且类型必须是multipart/form-data-->
+		<form action="/upload" method="post" enctype="multipart/form-data">
+			<input type="file" accept="image/jpeg,image/gif,image/png" name="photo" id="photo" required="required"/>
+			<input id="upload" type="submit" value="上传头像"/>
+		</form>
+	</body>
+	<script src="js/jquery.min.js"></script>
+	<script>
+		
+	</script>
+</html>

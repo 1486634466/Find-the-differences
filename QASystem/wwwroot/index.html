@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>在线问答系统</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+		<link rel="stylesheet" href="css/bootstrap.min.css"/>
+		<style>
+			.header{
+				width: 50px;
+				height: 50px;
+				border-radius: 50%;
+				vertical-align: bottom;
+			}
+			h6{
+				text-align: right;
+			}
+			ul{
+				list-style: none;
+			}
+			.answerBtn{
+				float: right;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+		  	<div class="container">
+			    <div class="navbar-header">
+			      	<a class="navbar-brand" href="/">在线问答系统</a>
+			    </div>
+			    <div>
+			    	<form class="navbar-form navbar-left" role="search">
+				        <div class="form-group">
+				          	<input id="qs" type="text" name="keyWord" class="form-control" placeholder="问题搜索" required>
+				          	<button type="submit" class="btn btn-default">搜索</button>
+				        </div>
+				     </form>
+			      	<ul id="menu" class="nav navbar-nav navbar-right">
+			        	<li id="ask">
+			        		<a href="#"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;提问</a>
+			        	</li>
+			        	<li id="dropDownMenu">
+			        		<a href="register.html">
+			        			<span class="glyphicon glyphicon-registration-mark"></span>&nbsp;注册
+			        		</a>
+			        	</li>
+			      	</ul>
+			    </div>
+		  	</div>
+		</nav>
+		
+		<main class="container">
+			
+		</main>
+		
+		<nav class="container text-center">
+		  	<ul class="pagination">
+			    <li id="prevBtn">
+			      	<a href="#">
+			        	<span aria-hidden="true">&laquo;</span>
+			      	</a>
+			    </li>
+
+			    <li id="nextBtn">
+			      	<a href="#">
+			        	<span aria-hidden="true">&raquo;</span>
+			      	</a>
+			    </li>
+		  	</ul>
+		</nav>
+		
+	</body>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/jquery.cookie.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<!--<script src="js/createList.js"></script>-->
+	<script>
+	
+		$.getScript("js/createList.js");
+		
+		//点击提问时，先判断有没有登录
+		$("#ask").click(function(){
+			if(isLogin){
+				//跳转提问页面
+				location.href = "ask.html";
+			}else{
+				//跳转登录页面
+				location.href = "login.html";
+			}
+		});
+		
+		function resetQuestion(){
+			var ten = results.slice(currentPage*10,currentPage*10+10);
+			
+			var htmlStr = "";
+			htmlStr+='<ul class="list-group">';
+			for(var i = ten.length-1;i>=0;i--){
+				htmlStr+="<li>";
+				htmlStr+='<div class="panel panel-success">';
+				htmlStr+='<div class="panel-heading">';
+				htmlStr+='<img src="userHeader/'+ten[i].header+'" class="header">';
+				var cd = new Date(ten[i].time);
+				var time = cd.getFullYear()+"-"+cd.getMonth()+"-"+cd.getDate()+" "+cd.getHours()+":"+cd.getMinutes();
+				htmlStr+=ten[i].user+'。提问时间：'+time+'。IP:'+ten[i].ip+'</div>';
+				htmlStr+='<div class="panel-body list-group-item-success">';
+				htmlStr+='<h4>'+ten[i].content+'</h4>'
+				htmlStr+='<button class="answerBtn" index='+i+'>我来回答</button>'
+				htmlStr+='</div>';
+				//添加回答列表
+				var ans = ten[i].answers;
+				if(ans){
+					htmlStr+='<ul class="list-group">';
+					for(var j = 0;j<ans.length;j++){
+						htmlStr+='<li class="list-group-item list-group-item-warning">';
+						htmlStr+='<p>'+ans[j].content+'</p>';
+						htmlStr+='<h6>回答者:';
+						htmlStr+=ans[j].user+'。回答时间：';
+						var cd = new Date(ans[j].time);
+						var time = cd.getFullYear()+"-"+cd.getMonth()+"-"+cd.getDate()+" "+cd.getHours()+":"+cd.getMinutes();
+						htmlStr+=time+'<img src="userHeader/';
+						htmlStr+=ans[j].header+'" class="header"></h6></li>';
+					}
+					htmlStr+='</ul>';
+				}
+				
+				htmlStr+='</div></li>';
+			}
+			htmlStr+='</ul>';
+			
+			$("main").html(htmlStr);
+			
+			$(".answerBtn").click(function(){
+				//console.log("你点击了第"+$(this).attr("index")+"个按钮");
+				var index =  $(this).attr("index");
+				
+				//cookie可以实现在不同页面之间传值，一个页面
+				//设置的cookie可以被同域名下的其他页面访问到。
+				$.cookie("index",index);
+				location.href = "answer.html";
+			});
+			
+			$(".pageBtn").removeClass("active");
+			$(".pageBtn").filter("[index="+currentPage+"]").addClass("active");
+		}
+		
+		//处理返回的数组
+		function showQuestion(page){
+			resetQuestion();
+			
+			var pages = Math.floor(results.length/10);
+			if (results.length%10>0){
+				pages++;
+			}
+			
+			var liStr = "";
+			for (var i = 0;i<pages;i++) {
+				if(i==currentPage){
+					liStr+='<li class="active pageBtn" index='+i+'><a href="#">'+(i+1)+'</a></li>';
+				}else{
+					liStr+='<li class="pageBtn" index='+i+'><a href="#">'+(i+1)+'</a></li>';
+				}
+				
+			}
+			
+			$(liStr).insertAfter("#prevBtn");
+			
+			$("#prevBtn").click(function(e){
+				e.preventDefault();
+				if(currentPage>0){
+					currentPage--;
+					resetQuestion();
+				}
+			});
+			
+			$("#nextBtn").click(function(e){
+				e.preventDefault();
+				if(currentPage<pages-1){
+					currentPage++;
+					resetQuestion();
+				}
+			});
+			
+			$(".pageBtn").click(function(e){
+				currentPage = $(this).attr("index");
+				resetQuestion();
+			});
+			
+		}
+		
+		var results = [];
+		var currentPage = 0;
+		
+		//请求问题列表
+		$.get("/question/all",function(res){
+			//console.dir(res);
+			results = res;
+			showQuestion(currentPage);
+			
+			
+		});
+		
+		//搜索
+		$("form").submit(function(e){
+			e.preventDefault();
+			$.get("/question/search",$("#qs").serialize(),function(res){
+				results = res;
+				showQuestion(currentPage);
+				
+			});
+		});
+		
+		
+		
+		
+		
+	</script>
+</html>

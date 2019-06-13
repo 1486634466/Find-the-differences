@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+		<title>登录</title>
+		<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	</head>
+	<body>
+		<nav class="navbar navbar-inverse">
+		  	<div class="container">
+			    <div class="navbar-header">
+			      	<a class="navbar-brand" href="/">智游问答系统</a>
+			    </div>
+			    <div>
+			      	<ul class="nav navbar-nav navbar-right">
+			        	<!--<li><a href="#"><span class="glyphicon glyphicon-question-sign"></span>&nbsp;提问</a></li>-->
+			        	<li><a href="register.html"><span class="glyphicon glyphicon-registration-mark"></span>&nbsp;注册</a></li>
+			      	</ul>
+			    </div>
+		  	</div>
+		</nav>
+		
+		<main class="container">
+			<form>
+				<div class="form-group">
+					<label for="user">用户名</label>
+					<input type="text" name="user" id="user" class="form-control"/>
+				</div>
+				<div class="form-group">
+					<label for="psw">密码</label>
+					<input type="password" name="psw" id="psw" class="form-control"/>
+				</div>
+			</form>
+			<button class="form-control btn btn-primary">登录</button>
+		</main>
+		
+		
+	</body>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script>
+		$("button").click(function(){
+			if($("#user").val().length <= 0||$("#psw").val().length <= 0){
+				alert("用户名和密码不能为空");
+				return;
+			}
+			//发起登录请求
+			$.post("/user/login",$("form").serialize(),function(res){
+				//console.dir(res);
+				if(res.err == 0){
+					location.href = "/";
+				}else{
+					alert(res.status);
+				}
+			});
+			
+		});
+		
+		
+	</script>
+</html>
